@@ -1,0 +1,32 @@
+meta {
+  name: Cancel Invitation
+  type: http
+  seq: 10
+}
+
+delete {
+  url: {{baseUrl}}/api/admin/invitations/{{invitedUserId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain success message", function() {
+    expect(res.body.message).to.equal("Invitation cancelled successfully");
+  });
+}
+
+docs {
+  Admin only endpoint to cancel a pending invitation.
+  This deletes the user record since they never activated their account.
+  Use the invitedUserId from the "Invite User" response.
+}
+

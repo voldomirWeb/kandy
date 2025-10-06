@@ -1,0 +1,41 @@
+meta {
+  name: Resend Invitation
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/admin/invitations/{{invitedUserId}}/resend
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.invitation_token) {
+    bru.setEnvVar("invitationToken", res.body.invitation_token);
+  }
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain new invitation token", function() {
+    expect(res.body.invitation_token).to.be.a('string');
+  });
+
+  test("Response should contain invitation link", function() {
+    expect(res.body.invitation_link).to.be.a('string');
+  });
+}
+
+docs {
+  Admin only endpoint to resend an invitation with a new token.
+  Use the invitedUserId from the "Invite User" response.
+}
+

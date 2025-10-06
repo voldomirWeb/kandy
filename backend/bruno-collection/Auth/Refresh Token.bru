@@ -1,0 +1,40 @@
+meta {
+  name: Refresh Token
+  type: http
+  seq: 16
+}
+
+post {
+  url: {{baseUrl}}/api/auth/refresh
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "refresh_token": "{{refreshToken}}"
+  }
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.token) {
+    bru.setEnvVar("token", res.body.token);
+  }
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain new token", function() {
+    expect(res.body.token).to.be.a('string');
+  });
+}
+
+docs {
+  Generates a new access token using a refresh token.
+  Refresh tokens are longer-lived (30 days) than access tokens (7 days).
+  The refresh token is saved from login response.
+}
+

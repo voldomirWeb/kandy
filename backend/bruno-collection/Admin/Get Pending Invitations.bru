@@ -1,0 +1,32 @@
+meta {
+  name: Get Pending Invitations
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/api/admin/invitations
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain invitations array", function() {
+    expect(res.body.invitations).to.be.an('array');
+    expect(res.body.count).to.be.a('number');
+  });
+}
+
+docs {
+  Admin only endpoint to list all pending invitations.
+  Shows users who have been invited but haven't accepted yet.
+}
+

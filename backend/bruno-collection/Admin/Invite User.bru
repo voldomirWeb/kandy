@@ -1,0 +1,59 @@
+meta {
+  name: Invite User
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/api/admin/invite
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "email": "newuser@example.com",
+    "name": "New User",
+    "role": "hiring_manager"
+  }
+}
+
+script:post-response {
+  if (res.status === 201 && res.body.invitation_token) {
+    bru.setEnvVar("invitationToken", res.body.invitation_token);
+  }
+  if (res.body.user && res.body.user.id) {
+    bru.setEnvVar("invitedUserId", res.body.user.id);
+  }
+}
+
+tests {
+  test("Status should be 201", function() {
+    expect(res.status).to.equal(201);
+  });
+
+  test("Response should contain invitation token", function() {
+    expect(res.body.invitation_token).to.be.a('string');
+  });
+
+  test("Response should contain user info", function() {
+    expect(res.body.user).to.be.an('object');
+    expect(res.body.user.email).to.equal("newuser@example.com");
+  });
+}
+
+docs {
+  Admin only endpoint to invite a new user.
+
+  Available roles:
+  - admin
+  - recruiter
+  - hiring_manager
+  - interviewer
+  - read_only
+}
+

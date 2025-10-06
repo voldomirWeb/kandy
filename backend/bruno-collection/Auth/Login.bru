@@ -1,0 +1,42 @@
+meta {
+  name: Login
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "email": "test@example.com",
+    "password": "Test1234!"
+  }
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.token) {
+    bru.setEnvVar("token", res.body.token);
+  }
+  if (res.status === 200 && res.body.refresh_token) {
+    bru.setEnvVar("refreshToken", res.body.refresh_token);
+  }
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("Response should contain token", function() {
+    expect(res.body.token).to.be.a('string');
+  });
+  
+  test("Response should contain user info", function() {
+    expect(res.body.user).to.be.an('object');
+    expect(res.body.user.email).to.equal("test@example.com");
+  });
+}

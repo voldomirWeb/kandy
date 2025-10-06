@@ -1,0 +1,32 @@
+meta {
+  name: Revoke Session
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{baseUrl}}/api/sessions/{{sessionId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain success message", function() {
+    expect(res.body.message).to.equal("Session revoked successfully");
+  });
+}
+
+docs {
+  Revokes a specific session by ID.
+  User must own the session to revoke it.
+  Set sessionId variable from "Get Active Sessions" response.
+}
+

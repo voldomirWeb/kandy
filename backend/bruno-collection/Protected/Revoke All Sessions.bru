@@ -1,0 +1,32 @@
+meta {
+  name: Revoke All Sessions
+  type: http
+  seq: 15
+}
+
+delete {
+  url: {{baseUrl}}/api/sessions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain success message", function() {
+    expect(res.body.message).to.equal("All other sessions revoked successfully");
+  });
+}
+
+docs {
+  Revokes all sessions except the current one.
+  Useful for "logout from all devices" functionality.
+  Current session remains active.
+}
+

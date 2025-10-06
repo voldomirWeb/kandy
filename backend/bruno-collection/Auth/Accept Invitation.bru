@@ -1,0 +1,52 @@
+meta {
+  name: Accept Invitation
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/auth/accept-invitation
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "token": "{{invitationToken}}",
+    "password": "NewUserPass123!"
+  }
+}
+
+script:post-response {
+  if (res.status === 200 && res.body.token) {
+    bru.setEnvVar("token", res.body.token);
+  }
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain JWT token", function() {
+    expect(res.body.token).to.be.a('string');
+  });
+
+  test("Response should contain user info", function() {
+    expect(res.body.user).to.be.an('object');
+    expect(res.body.user.id).to.be.a('number');
+  });
+
+  test("User should be logged in", function() {
+    expect(res.body.message).to.equal("Invitation accepted successfully");
+  });
+}
+
+docs {
+  Public endpoint for accepting an invitation.
+  User sets their password and is immediately logged in.
+  Token expires after 7 days.
+
+  The invitation token is automatically saved from the "Invite User" response.
+}
+

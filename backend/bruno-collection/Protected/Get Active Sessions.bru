@@ -1,0 +1,32 @@
+meta {
+  name: Get Active Sessions
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{baseUrl}}/api/sessions
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+tests {
+  test("Status should be 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("Response should contain sessions array", function() {
+    expect(res.body.sessions).to.be.an('array');
+    expect(res.body.count).to.be.a('number');
+  });
+}
+
+docs {
+  Returns all active sessions for the authenticated user.
+  Shows IP address, user agent, last used time, and expiration.
+}
+
