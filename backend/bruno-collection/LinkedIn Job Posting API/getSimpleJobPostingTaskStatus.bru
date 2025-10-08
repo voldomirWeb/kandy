@@ -1,0 +1,30 @@
+meta {
+  name: getSimpleJobPostingTaskStatus
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/simpleJobPostingTasks
+  body: none
+  auth: oauth2
+}
+
+params:query {
+  ids: 
+}
+
+auth:oauth2 {
+  grant_type: client_credentials
+  access_token_url: https://www.linkedin.com/oauth/v2/accessToken
+  refresh_token_url: {{oauth_refresh_url}}
+  client_id: {{oauth_client_id}}
+  client_secret: {{oauth_client_secret}}
+  scope: 
+  credentials_placement: header
+  credentials_id: 
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: false
+  auto_refresh_token: true
+}

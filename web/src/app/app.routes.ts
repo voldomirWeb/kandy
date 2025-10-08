@@ -39,6 +39,41 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./routes/dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
+      {
+        path: 'jobs',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./routes/jobs/jobs-list.component').then((m) => m.JobsListComponent),
+          },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('./routes/jobs/job-form.component').then((m) => m.JobFormComponent),
+          },
+          {
+            path: ':id/edit',
+            loadComponent: () =>
+              import('./routes/jobs/job-form.component').then((m) => m.JobFormComponent),
+          },
+          {
+            path: ':id/applicants',
+            loadComponent: () =>
+              import('./routes/jobs/applicants-kanban.component').then((m) => m.ApplicantsKanbanComponent),
+          },
+        ],
+      },
+      {
+        path: 'settings',
+        children: [
+          {
+            path: 'integrations',
+            loadComponent: () =>
+              import('./routes/settings/integration-settings.component').then((m) => m.IntegrationSettingsComponent),
+          },
+        ],
+      },
     ],
   },
 ];

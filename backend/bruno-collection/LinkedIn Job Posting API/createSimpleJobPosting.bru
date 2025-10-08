@@ -1,0 +1,36 @@
+meta {
+  name: createSimpleJobPosting
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/simpleJobPostings
+  body: json
+  auth: oauth2
+}
+
+headers {
+  x-restli-method: 
+}
+
+auth:oauth2 {
+  grant_type: client_credentials
+  access_token_url: https://www.linkedin.com/oauth/v2/accessToken
+  refresh_token_url: {{oauth_refresh_url}}
+  client_id: {{oauth_client_id}}
+  client_secret: {{oauth_client_secret}}
+  scope: 
+  credentials_placement: header
+  credentials_id: 
+  token_placement: header
+  token_header_prefix: Bearer
+  auto_fetch_token: false
+  auto_refresh_token: true
+}
+
+body:json {
+  {
+    "elements": []
+  }
+}

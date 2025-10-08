@@ -32,6 +32,7 @@ func registerAuthRoutes(r *gin.Engine) {
 	{
 		auth.POST("/register", handlers.Register)
 		auth.POST("/login", middleware.RateLimitLogin(), handlers.Login)
+		auth.POST("/logout", middleware.AuthMiddleware(), handlers.Logout)
 		auth.POST("/password-reset/request", handlers.RequestPasswordReset)
 		auth.POST("/password-reset/confirm", handlers.ResetPassword)
 		auth.POST("/accept-invitation", handlers.AcceptInvitation)

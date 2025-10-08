@@ -98,7 +98,6 @@ func Register(c *gin.Context) {
 	})
 }
 
-// Login handles user authentication
 func Login(c *gin.Context) {
 	var req LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -106,20 +105,17 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Find user by email
 	var user models.User
 	if err := database.DB.Where("email = ?", req.Email).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
 	}
 
-	// Check if user is active
 	if !user.IsActive {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Account is deactivated"})
 		return
 	}
 
-	// Verify password
 	if !user.CheckPassword(req.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid email or password"})
 		return
@@ -127,12 +123,10 @@ func Login(c *gin.Context) {
 
 	database.DB.Unscoped().Where("user_id = ? AND expires_at < ?", user.ID, time.Now()).Delete(&models.Session{})
 
-	// Update login tracking
 	now := time.Now()
 	user.LastLoginAt = &now
 	database.DB.Save(&user)
 
-	// Generate JWT tokens
 	token, err := utils.GenerateJWT(user.ID, user.Email, string(user.Role))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
@@ -145,7 +139,6 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Create session
 	session := models.Session{
 		UserID:       user.ID,
 		Token:        token,
@@ -259,5 +252,24 @@ func GetProfile(c *gin.Context) {
 			"role":      user.Role,
 			"is_active": user.IsActive,
 		},
+	})
+}
+
+func Logout(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+	token := c.GetHeader("Authorization")
+
+	// Remove "Bearer " prefix
+	if len(token) > 7 {
+		token = token[7:]
+	}
+
+	if err := database.DB.Unscoped().Where("user_id = ? AND token = ?", userID, token).Delete(&models.Session{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Logged out successfully",
 	})
 }
